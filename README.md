@@ -1,38 +1,28 @@
-pandoc Dockerfiles
+Docker Pandoc for Law Office Oikeushovi's SFS 2487 template
 ================================================================================
 
-This repo contains a collection of Dockerfiles to build various
-[pandoc](https://pandoc.org/) container images.
+This repository (forked from
+[pandoc/dockerfiles](https://github.com/pandoc/dockerfiles)) contains a
+collection of Dockerfiles to build a [Pandoc](https://pandoc.org/) container
+images for Law Office Oikeushovi's SFS 2487 template that generates an
+[SFS 2487](https://sales.sfs.fi/fi/index/tuotteet/SFS/SFS/ID2/2/850.html.stx)
+formatted official document from given
+[markdown](https://pandoc.org/MANUAL.html#pandocs-markdown) and
+[yaml](https://yaml.org/) files.
 
-**Contents**
+Building a docker image
+================================================================================
 
-- [Available Images](#available-images)
-- [Usage](#usage)
-    - [Basic Usage](#basic-usage)
-    - [Pandoc Scripts](#pandoc-scripts)
-    - [GitHub Actions](#github-actions)
-- [Maintenance Notes](#maintenance-notes)
-    - [Managing new Pandoc Releases](#managing-new-pandoc-releases)
-- [License](#license)
+```{#build .sh}
+STACK=ubuntu make latex
+```
 
-Available Images
-==================================================================
+The resulting images are:
 
-Docker images hosted here have a the variants "minimal", "core",
-and "latex".
+- pandoc/latex:edge-ubuntu
+- ubuntu:jammy
 
-- minimal: kept as small as possible. See the [pandoc/minimal][]
-  repository.
-- core: suitable for common conversion tasks; includes additional
-  libraries and programs. See the [pandoc/core][] repository.
-- latex: builds on top of the core image, and provides a basic
-  LaTeX installation in addition. This includes all packages that
-  `pandoc` _might_ use, and any libraries needed by these
-  packages. See the [pandoc/latex][] repository.
-  
-[pandoc/minimal]: https://hub.docker.com/r/pandoc/minimal
-[pandoc/core]: https://hub.docker.com/r/pandoc/core
-[pandoc/latex]: https://hub.docker.com/r/pandoc/latex
+They are both needed for Law Office Oikeushovi's SFS 2487 template.
 
 Usage
 ================================================================================
@@ -74,7 +64,7 @@ Basic Usage
    convert to HTML.
 
    ```sh
-   docker run --rm --volume "`pwd`:/data" --user `id -u`:`id -g` pandoc/latex:2.6 README.md
+   docker run --rm --volume "`pwd`:/data" --user `id -u`:`id -g` pandoc/latex:edge-ubuntu README.md
    ```
 
    The `--volume` flag maps some directory on *your machine* (lefthand side of
@@ -87,12 +77,12 @@ Basic Usage
    It is hence a good idea to specify for docker the user and group IDs to use
    via the `--user` flag.
 
-   `pandoc/latex:2.6` declares the image that you're going to run. It's always a
+   `pandoc/latex:edge-ubuntu` declares the image that you're going to run. It's always a
    good idea to hardcode the version, lest future releases break your code.
 
    It may look weird to you that you can just add `README.md` at the end of this
-   line, but that's just because the `pandoc/latex:2.6` will simply prepend
-   `pandoc` in front of anything you write after `pandoc/latex:2.6` (this is
+   line, but that's just because the `pandoc/latex:edge-ubuntu` will simply prepend
+   `pandoc` in front of anything you write after `pandoc/latex:edge-ubuntu` (this is
    known as the `ENTRYPOINT` field of the Dockerfile). So what you're really
    running here is `pandoc README.md`, which is a valid pandoc command.
 
@@ -136,58 +126,13 @@ You only have to do this once for each script file.
 You can then run the completed script file in a pandoc docker container like so:
 
 ```sh
-docker run --rm --volume "`pwd`:/data" --entrypoint "/data/script.sh" pandoc/latex:2.6
+docker run --rm --volume "`pwd`:/data" --entrypoint "/data/script.sh" pandoc/latex:edge-ubuntu
 ```
 
 Notice that the above `script.sh` *did* specify `pandoc`, and you can't just
 omit it as in the simpler command above. This is because the `--entrypoint` flag
 *overrides* the `ENTRYPOINT` field in the docker file (`pandoc`, in our case),
 so you must include the command.
-
-GitHub Actions
---------------------------------------------------------------------------------
-
-GitHub Actions is an Infrastructure as a Service (IaaS) from GitHub that allows
-you to automatically run code on GitHub's servers on every push (or a bunch of
-other GitHub events).
-
- Such continuous integration and delivery (CI/CD) may be useful for many pandoc
- users. Perhaps, you're using pandoc convert some markdown source document into HTML and deploy the results to a webserver. If the source document is under
- version control (such as git), you might want pandoc to convert and deploy
- *on every commit*. That is what CI/CD does.
-
-To use pandoc on GitHub Actions, you can leverage the docker images of this
-project.
-
-To learn more how to use the docker pandoc images in your GitHub Actions
-workflow, see
-[these examples](http://github.com/maxheld83/pandoc-action-example).
-
-Building custom images
---------------------------------------------------------------------------------
-
-The official images are bare-bones, providing everything required to use pandoc
-and Lua filters, but not much more. Often, one will want to have additional
-software available.  This is best achieved by building custom Docker images.
-
-For example, one may want to use advanced spellchecking as demonstrated in the
-[spellcheck] in the Lua filters collection. This requires the *aspell* package
-as well as language-specific packages. A good solution would be to define a new
-Dockerfile and to use `pandoc/core` as the base package:
-
-``` Dockerfile
-FROM pandoc/core:latest
-RUN apk --no-cache add aspell aspell-en aspell-fr
-```
-
-Create a new image by running `docker build --tag=pandoc-with-aspell .` in the
-directory containing the Dockerfile. Now you can use `pandoc-with-aspell`
-instead of `pandoc/core` to get access to spellchecking in your image.
-
-See Docker documentation for more details, for example [part 2 of the Get
-Started guide](https://docs.docker.com/get-started/part2/).
-
-[spellcheck](https://github.com/pandoc/lua-filters/tree/master/spellcheck)
 
 
 License
