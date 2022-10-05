@@ -14,6 +14,8 @@ Building a docker image
 ================================================================================
 
 ```{#build .sh}
+git clone https://github.com/ramihovi/docker-pandoc-for-oh.git
+cd docker-pandoc-for-oh
 STACK=ubuntu make latex
 ```
 
