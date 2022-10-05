@@ -134,6 +134,9 @@ RUN apt-get -q --no-allow-insecure-repositories update \
         tar \
         wget \
         xzdec \
+  && apt-get install --assume-yes --no-install-recommends \
+	libpandoc-elements-perl \
+	libpandoc-wrapper-perl \
   && rm -rf /var/lib/apt/lists/*
 
 # DANGER: this will vary for different distributions,

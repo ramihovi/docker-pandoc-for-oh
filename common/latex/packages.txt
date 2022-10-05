@@ -62,6 +62,12 @@ microtype
 selnolig
 upquote
 xetex
+# OH additions
+catchfile
+enumitem
+lastpage
+lipsum
+needspace
 
 #########################################################################
 # I18n and languages; the choice of selected languages is historic,
