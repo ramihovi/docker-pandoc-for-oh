@@ -10,7 +10,7 @@ formatted official document from given
 [markdown](https://pandoc.org/MANUAL.html#pandocs-markdown) and
 [yaml](https://yaml.org/) files.
 
-Building a docker image
+Building docker images
 ================================================================================
 
 ```{#build .sh}
